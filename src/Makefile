@@ -6,18 +6,19 @@ SRC_DIR:=.
 
 TEST_SUITE_NAME:=ClassATest
 TEST_SUITE:=$(BUILD_DIR)/$(TEST_SUITE_NAME).class
-CLASS_FILES:= $(BUILD_DIR)/ExecDump.class $(BUILD_DIR)/PerTestCaseCoverageRunner.class $(BUILD_DIR)/JacocoListener.class $(TEST_SUITE)
+CLASS_FILES:= $(BUILD_DIR)/ExecDump.class $(BUILD_DIR)/PerTestCaseCoverageRunner.class $(BUILD_DIR)/JacocoListener.class $(BUILD_DIR)/ExecAnalyze.class $(TEST_SUITE)  $(BUILD_DIR)/PerJUnitTestCaseVisitor.class
 
 JUNIT:=$(LIB_DIR)/junit-4.11.jar
 JACOCO_AGENT:=$(LIB_DIR)/jacocoagent.jar
 JACOCO_CORE:=$(LIB_DIR)/org.jacoco.core-0.6.2.20130126-2101.jar
 HAMCREST:=$(LIB_DIR)/hamcrest-core-1.3.jar
+ASM:=$(LIB_DIR)/asm-all-4.1.jar
 
-
-JAVAAGENT_OPTIONS:=destfile=$(BUILD_DIR)/jacoco.exec,dumponexit=false,excludes=*org/jacoco*:*org/junit*:*com/sun*
+#JAVAAGENT_OPTIONS:=destfile=$(BUILD_DIR)/jacoco.exec,dumponexit=false,excludes=*org/jacoco*:*org/junit*:*com/sun*:ExecDump:ExecAnalyze:PerTestCaseCoverageRunner:JacocoListener
+JAVAAGENT_OPTIONS:=destfile=$(BUILD_DIR)/jacoco.exec,dumponexit=false,excludes=*org/jacoco*:*org/junit*:*com/sun*:ExecDump
 JAVAAGENT:=$(LIB_DIR)/jacocoagent.jar
 
-.PHONY: all run dump clean
+.PHONY: all run dump clean t1
 
 # Rule for compiling the .class files, but does not run anything
 all: $(BUILD_DIR) $(CLASS_FILES)
@@ -42,3 +43,7 @@ $(BUILD_DIR)/jacoco.exec: $(CLASS_FILES)
 # Rule for removing the entire build directory.
 clean:
 	rm -r $(BUILD_DIR)
+
+analyze: $(BUILD_DIR) $(CLASS_FILES)
+#t1: $(BUILD_DIR) $(BUILD_DIR)/ExecAnalyze.class
+	$(JAVA) -cp $(BUILD_DIR):$(JACOCO_CORE):$(ASM) ExecAnalyze
